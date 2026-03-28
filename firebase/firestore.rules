@@ -1,0 +1,56 @@
+rules_version = '2';
+
+// Поля приложения: orders (clientId, status, …). Деплой: firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function userRole() {
+      return userDoc().exists ? userDoc().data.role : '';
+    }
+
+    function isStaff() {
+      return userRole() == 'franchisee'
+        || userRole() == 'production'
+        || userRole() == 'factory';
+    }
+
+    function validStatusTransition(oldS, newS) {
+      return (oldS == 'ОФОРМЛЕН' && newS == 'НА ПОШИВЕ')
+        || (oldS == 'НА ПОШИВЕ' && newS == 'ГОТОВО');
+    }
+
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      allow create: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['name', 'role', 'email'])
+        && request.resource.data.role in ['client', 'franchisee', 'production'];
+
+      allow update: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.role == resource.data.role;
+
+      allow delete: if false;
+    }
+
+    match /orders/{orderId} {
+      allow read: if request.auth != null && (
+        resource.data.clientId == request.auth.uid
+        || isStaff()
+      );
+
+      allow create: if request.auth != null
+        && request.resource.data.clientId == request.auth.uid
+        && request.resource.data.status == 'ОФОРМЛЕН';
+
+      allow update: if request.auth != null && isStaff()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && validStatusTransition(resource.data.status, request.resource.data.status);
+
+      allow delete: if false;
+    }
+  }
+}
