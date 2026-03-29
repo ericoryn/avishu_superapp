@@ -10,13 +10,20 @@ import { ORDER_STAGES } from '../../constants';
 import { SkeletonCard, SkeletonOrderCard } from '../../components/Skeleton';
 import ThemeToggle from '../../components/ThemeToggle';
 
+import imgOversizedHoodie from '../../assets/OVERSIZED HOODIE X.png';
+import imgCargoPants from '../../assets/CARGO PANTS V2.png';
+import imgLimitedTrench from '../../assets/LIMITED TRENCH.png';
+import imgTechFleece from '../../assets/TECH FLEECE ZIP.png';
+import imgWashedDenim from '../../assets/WASHED DENIM JACKET.png';
+import imgUtilityVest from '../../assets/UTILITY VEST PRO.png';
+
 const PRODUCTS = [
-  { id: '1', name: 'OVERSIZED HOODIE X', price: 15000, type: 'IN_STOCK', category: 'ВЕРХ' },
-  { id: '2', name: 'CARGO PANTS V2', price: 12000, type: 'IN_STOCK', category: 'НИЗ' },
-  { id: '3', name: 'LIMITED TRENCH', price: 35000, type: 'PREORDER', category: 'ВЕРХНЯЯ ОДЕЖДА' },
-  { id: '4', name: 'TECH FLEECE ZIP', price: 18000, type: 'IN_STOCK', category: 'ВЕРХ' },
-  { id: '5', name: 'WASHED DENIM JACKET', price: 22000, type: 'PREORDER', category: 'ВЕРХНЯЯ ОДЕЖДА' },
-  { id: '6', name: 'UTILITY VEST PRO', price: 9500, type: 'IN_STOCK', category: 'ВЕРХ' },
+  { id: '1', name: 'OVERSIZED HOODIE X', price: 15000, type: 'IN_STOCK', category: 'ВЕРХ', image: imgOversizedHoodie },
+  { id: '2', name: 'CARGO PANTS V2', price: 12000, type: 'IN_STOCK', category: 'НИЗ', image: imgCargoPants },
+  { id: '3', name: 'LIMITED TRENCH', price: 35000, type: 'PREORDER', category: 'ВЕРХНЯЯ ОДЕЖДА', image: imgLimitedTrench },
+  { id: '4', name: 'TECH FLEECE ZIP', price: 18000, type: 'IN_STOCK', category: 'ВЕРХ', image: imgTechFleece },
+  { id: '5', name: 'WASHED DENIM JACKET', price: 22000, type: 'PREORDER', category: 'ВЕРХНЯЯ ОДЕЖДА', image: imgWashedDenim },
+  { id: '6', name: 'UTILITY VEST PRO', price: 9500, type: 'IN_STOCK', category: 'ВЕРХ', image: imgUtilityVest },
 ];
 
 export default function ClientHome() {
@@ -143,8 +150,12 @@ function ProductCard({ product, onSelect }) {
       className="border border-themed p-4 md:p-8 flex flex-col justify-between cursor-pointer product-card group"
       onClick={() => onSelect(product)}
     >
-      <div className="h-40 md:h-64 bg-themed-secondary flex items-center justify-center mb-4 md:mb-6 border border-transparent group-hover:border-themed transition-colors">
-        <ShoppingBag size={36} strokeWidth={1} className="text-themed-tertiary" />
+      <div className="h-40 md:h-64 bg-themed-secondary flex items-center justify-center mb-4 md:mb-6 border border-transparent group-hover:border-themed transition-colors overflow-hidden">
+        {product.image ? (
+          <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        ) : (
+          <ShoppingBag size={36} strokeWidth={1} className="text-themed-tertiary" />
+        )}
       </div>
       <div className="flex items-start justify-between gap-2">
         <div>
@@ -155,7 +166,7 @@ function ProductCard({ product, onSelect }) {
       <div className="flex justify-between items-center mt-3 md:mt-4">
         <span className="text-lg md:text-xl font-bold">{product.price.toLocaleString()} ₸</span>
         <div className="flex items-center gap-2">
-          <span className={`text-xs font-bold px-2 py-1 ${product.type === 'PREORDER' ? 'bg-green-800 text-green-300' : 'bg-themed-inverse text-themed-inverse'}`}>{product.type}</span>
+          <span className={`text-xs font-bold px-2 py-1 ${product.type === 'PREORDER' ? 'bg-themed-tertiary text-themed' : 'bg-themed-inverse text-themed-inverse'}`}>{product.type === 'PREORDER' ? 'ПРЕДЗАКАЗ' : 'В НАЛИЧИИ'}</span>
           <button
             onClick={handleAddToCart}
             className="w-9 h-9 bg-themed-inverse text-themed-inverse flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
@@ -343,10 +354,15 @@ function ProductModal({ product, onClose, user }) {
           <button onClick={onClose} className="text-4xl font-light hover:rotate-90 transition-transform border-none bg-transparent">&times;</button>
         </div>
 
+        {product.image && (
+          <div className="w-full h-64 md:h-80 bg-themed-secondary overflow-hidden">
+            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          </div>
+        )}
         <div className="p-8 space-y-6">
           <div className="flex justify-between items-center">
             <p className="text-2xl font-bold">{product.price.toLocaleString()} ₸</p>
-            <span className={`text-xs font-bold px-3 py-1 ${product.type === 'PREORDER' ? 'bg-green-800 text-green-300' : 'bg-themed-inverse text-themed-inverse'}`}>{product.type}</span>
+            <span className={`text-xs font-bold px-3 py-1 ${product.type === 'PREORDER' ? 'bg-themed-tertiary text-themed' : 'bg-themed-inverse text-themed-inverse'}`}>{product.type === 'PREORDER' ? 'ПРЕДЗАКАЗ' : 'В НАЛИЧИИ'}</span>
           </div>
 
           {product.type === 'PREORDER' && (
@@ -474,8 +490,7 @@ function OrderCard({ order }) {
   const isCompleted = order.status === 'ГОТОВО';
 
   return (
-    <div className={`border p-6 space-y-8 relative overflow-hidden transition-all ${isCompleted ? 'border-green-600 bg-green-50 [data-theme="dark"]_&:bg-green-900/20' : 'border-themed'}`}
-         style={isCompleted ? { borderColor: 'var(--accent-green)' } : {}}
+    <div className={`border p-6 space-y-8 relative overflow-hidden transition-all ${isCompleted ? 'border-themed bg-themed-secondary' : 'border-themed'}`}
     >
       <div className="absolute top-0 right-0 p-4 bg-themed-inverse text-themed-inverse font-bold text-xs">{order.type}</div>
       <div>
@@ -490,7 +505,7 @@ function OrderCard({ order }) {
           className="absolute top-1/2 -mt-px h-0.5 z-0 transition-all duration-500"
           style={{
             width: `${(currentStageIdx / (ORDER_STAGES.length - 1)) * 100}%`,
-            backgroundColor: isCompleted ? 'var(--accent-green)' : 'var(--text-primary)'
+            backgroundColor: 'var(--text-primary)'
           }}
         ></div>
         <div className="flex justify-between relative z-10">
@@ -499,14 +514,12 @@ function OrderCard({ order }) {
               <div
                 className="w-4 h-4 rounded-full border-2 transition-colors"
                 style={{
-                  borderColor: idx <= currentStageIdx ? (isCompleted ? 'var(--accent-green)' : 'var(--text-primary)') : 'var(--text-primary)',
-                  backgroundColor: idx <= currentStageIdx ? (isCompleted ? 'var(--accent-green)' : 'var(--text-primary)') : 'var(--bg-primary)'
+                  borderColor: idx <= currentStageIdx ? 'var(--text-primary)' : 'var(--text-primary)',
+                  backgroundColor: idx <= currentStageIdx ? 'var(--text-primary)' : 'var(--bg-primary)'
                 }}
               ></div>
               <span className={`text-xs font-bold w-24 text-center ${
-                idx <= currentStageIdx
-                  ? (isCompleted ? 'text-green-600' : 'text-themed')
-                  : 'text-themed-tertiary'
+                idx <= currentStageIdx ? 'text-themed' : 'text-themed-tertiary'
               }`}>{stage}</span>
             </div>
           ))}

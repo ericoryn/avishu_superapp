@@ -26,16 +26,11 @@ export default function ProductionQueue() {
 
     const q = query(
       collection(db, 'orders'),
-      where('status', 'in', ['ОФОРМЛЕН', 'НА ПОШИВЕ'])
+      where('status', '==', 'НА ПОШИВЕ')
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      setTasks(
-        data.sort(
-          (a, b) =>
-            (a.status === 'НА ПОШИВЕ' ? -1 : 1) - (b.status === 'НА ПОШИВЕ' ? -1 : 1)
-        )
-      );
+      setTasks(data);
       checkLoaded();
     });
 
@@ -78,7 +73,7 @@ export default function ProductionQueue() {
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 border-b-2 border-themed pb-6 md:pb-8 gap-4 animate-fade-in">
         <div>
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-widest">AVISHU</h1>
-          <p className="text-sm md:text-xl mt-1 md:mt-2 text-gray-400 font-bold uppercase tracking-widest flex items-center gap-2">
+          <p className="text-sm md:text-xl mt-1 md:mt-2 text-themed-tertiary font-bold uppercase tracking-widest flex items-center gap-2">
             <Settings size={18} /> ТЕРМИНАЛ / {user?.name}
           </p>
         </div>
@@ -88,8 +83,8 @@ export default function ProductionQueue() {
               <span className="text-base md:text-lg font-black tabular-nums leading-none animate-pop">{tasks.length}</span>
               <span className="text-[10px] font-bold text-themed-tertiary uppercase tracking-wide leading-tight">ОЧЕРЕДЬ</span>
             </div>
-            <div className="border border-green-500 h-10 px-2 md:px-3 shrink-0 box-border flex items-center justify-center gap-2 flex-1 md:flex-initial min-w-0">
-              <span className="text-base md:text-lg font-black tabular-nums text-green-500 leading-none animate-pop" style={{ animationDelay: '0.1s' }}>{completedTasks.length}</span>
+            <div className="border border-themed h-10 px-2 md:px-3 shrink-0 box-border flex items-center justify-center gap-2 flex-1 md:flex-initial min-w-0">
+              <span className="text-base md:text-lg font-black tabular-nums leading-none animate-pop" style={{ animationDelay: '0.1s' }}>{completedTasks.length}</span>
               <span className="text-[10px] font-bold text-themed-tertiary uppercase tracking-wide leading-tight">ГОТОВО</span>
             </div>
           </div>
@@ -112,7 +107,7 @@ export default function ProductionQueue() {
         </button>
         <button
           onClick={() => setShowCompleted(true)}
-          className={`font-bold text-sm md:text-lg px-4 md:px-6 py-2 md:py-3 transition-all flex items-center gap-2 btn-brutal ${showCompleted ? 'bg-green-600 text-white' : 'border border-themed text-themed-tertiary hover:border-green-600 hover:text-green-600'}`}
+          className={`font-bold text-sm md:text-lg px-4 md:px-6 py-2 md:py-3 transition-all flex items-center gap-2 btn-brutal ${showCompleted ? 'bg-themed-inverse text-themed-inverse' : 'border border-themed text-themed-tertiary hover:border-themed hover:text-themed'}`}
         >
           <Package size={16} /> ГОТОВО ({completedTasks.length})
         </button>
@@ -125,31 +120,27 @@ export default function ProductionQueue() {
           ) : (
             <>
               {tasks.map(task => (
-                <div key={task.id} className="border-2 md:border-4 border-white p-4 md:p-8 group transition-all duration-300 relative hover:border-green-500 product-card" style={{ backgroundColor: 'transparent' }}
-                     onMouseOver={e => { e.currentTarget.style.backgroundColor = 'rgba(22,163,74,0.05)'; }}
-                     onMouseOut={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                <div key={task.id} className="border-2 md:border-4 border-themed p-4 md:p-8 group transition-all duration-300 relative hover:bg-themed-secondary product-card"
                 >
-                  <div className={`absolute top-0 right-0 p-2 md:p-4 text-xs md:text-xl font-bold border-l-2 md:border-l-4 border-b-2 md:border-b-4 ${
-                    task.status === 'НА ПОШИВЕ' ? 'bg-white text-black border-white' : 'bg-transparent text-white border-white'
-                  } group-hover:border-green-500 transition-colors`}>
+                  <div className={`absolute top-0 right-0 p-2 md:p-4 text-xs md:text-xl font-bold border-l-2 md:border-l-4 border-b-2 md:border-b-4 bg-themed-inverse text-themed-inverse border-themed transition-colors`}>
                     {task.status}
                   </div>
 
                   <h3 className="text-xl md:text-4xl font-black mb-4 md:mb-8 pt-6 md:pt-8 pr-24 md:pr-0">{task.items.map(i => i.name).join(', ')}</h3>
 
                   <div className="grid grid-cols-2 gap-2 md:gap-4 mb-6 md:mb-16 opacity-80 text-sm md:text-xl font-bold uppercase">
-                    <div className="border border-white p-2 md:p-4">
-                      <span className="text-gray-400 text-xs block mb-1">ЗАКАЗ</span>
+                  <div className="border border-themed p-2 md:p-4">
+                      <span className="text-themed-tertiary text-xs block mb-1">ЗАКАЗ</span>
                       {task.id.slice(0,8)}...
                     </div>
-                    <div className="border border-white p-2 md:p-4">
-                      <span className="text-gray-400 text-xs block mb-1">КЛИЕНТ</span>
+                    <div className="border border-themed p-2 md:p-4">
+                      <span className="text-themed-tertiary text-xs block mb-1">КЛИЕНТ</span>
                       <span className="truncate block">{task.clientName || '—'}</span>
                     </div>
-                    <div className="border border-white p-2 md:p-4 col-span-2 flex justify-between items-center">
+                    <div className="border border-themed p-2 md:p-4 col-span-2 flex justify-between items-center">
                       <div>
-                        <span className="text-gray-400 text-xs block mb-1">ТИП</span>
-                        <span className={task.type === 'PREORDER' ? 'text-green-400' : 'text-white'}>
+                        <span className="text-themed-tertiary text-xs block mb-1">ТИП</span>
+                        <span>
                           {task.type} {task.type === 'PREORDER' && `- ${task.preorderDate}`}
                         </span>
                       </div>
@@ -159,20 +150,20 @@ export default function ProductionQueue() {
 
                   <button
                     onClick={() => handleCompleteStage(task)}
-                    className="w-full bg-white text-black hover:bg-green-500 hover:text-white p-4 md:p-8 text-lg md:text-4xl font-black flex items-center justify-center gap-3 md:gap-6 transition-all btn-brutal"
+                    className="w-full bg-themed-inverse text-themed-inverse hover:opacity-80 p-4 md:p-8 text-lg md:text-4xl font-black flex items-center justify-center gap-3 md:gap-6 transition-all btn-brutal"
                   >
                     <Check size={28} strokeWidth={4} className="md:w-12 md:h-12" />
                     <span className="md:hidden">
-                      {task.status === 'ОФОРМЛЕН' ? 'НА ПОШИВ →' : 'ГОТОВО ✓'}
+                      ЗАВЕРШИТЬ ✔
                     </span>
                     <span className="hidden md:inline">
-                      {task.status === 'ОФОРМЛЕН' ? 'НАЧАТЬ ПОШИВ (НА ПОШИВЕ)' : 'ЗАВЕРШИТЬ ЗАКАЗ (ГОТОВО)'}
+                      ЗАВЕРШИТЬ ЗАКАЗ (ГОТОВО)
                     </span>
                   </button>
                 </div>
               ))}
               {tasks.length === 0 && (
-                <div className="text-2xl md:text-6xl font-black text-gray-800 tracking-tighter col-span-full py-16 md:py-32 text-center uppercase border-2 md:border-4 border-dashed border-gray-800 animate-fade-in">
+                <div className="text-2xl md:text-6xl font-black text-themed-tertiary tracking-tighter col-span-full py-16 md:py-32 text-center uppercase border-2 md:border-4 border-dashed border-themed-secondary animate-fade-in">
                  НЕТ АКТИВНЫХ ЗАДАЧ
                 </div>
               )}
@@ -182,12 +173,12 @@ export default function ProductionQueue() {
       ) : (
         <main className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 stagger-children">
           {completedTasks.map(task => (
-            <div key={task.id} className="border-2 border-green-800 p-4 md:p-6" style={{ backgroundColor: 'rgba(22,163,74,0.08)' }}>
+            <div key={task.id} className="border-2 border-themed p-4 md:p-6 bg-themed-secondary">
               <div className="flex justify-between items-start mb-3 md:mb-4 gap-2">
-                <h3 className="text-lg md:text-2xl font-black text-green-400">{task.items?.map(i => i.name).join(', ')}</h3>
-                <span className="bg-green-600 text-white px-2 md:px-3 py-1 text-xs font-bold flex-shrink-0">ГОТОВО</span>
+                <h3 className="text-lg md:text-2xl font-black">{task.items?.map(i => i.name).join(', ')}</h3>
+                <span className="bg-themed-inverse text-themed-inverse px-2 md:px-3 py-1 text-xs font-bold flex-shrink-0">ГОТОВО</span>
               </div>
-              <div className="flex flex-wrap gap-2 md:gap-4 text-xs md:text-sm font-bold text-gray-500">
+              <div className="flex flex-wrap gap-2 md:gap-4 text-xs md:text-sm font-bold text-themed-tertiary">
                 <span>ID: {task.id.slice(0,8).toUpperCase()}</span>
                 <span>{task.clientName || '—'}</span>
                 <span>{task.totalPrice?.toLocaleString()} ₸</span>
@@ -195,7 +186,7 @@ export default function ProductionQueue() {
             </div>
           ))}
           {completedTasks.length === 0 && (
-            <div className="text-xl md:text-4xl font-black text-gray-800 col-span-full py-16 md:py-24 text-center border-2 border-dashed border-gray-800 animate-fade-in">
+            <div className="text-xl md:text-4xl font-black text-themed-tertiary col-span-full py-16 md:py-24 text-center border-2 border-dashed border-themed-secondary animate-fade-in">
               НЕТ ЗАВЕРШЕННЫХ ЗАКАЗОВ
             </div>
           )}

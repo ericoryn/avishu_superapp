@@ -187,6 +187,18 @@ avishu_superapp/
 
 ---
 
+## Скриншоты экранов
+
+| Логин / Выбор роли | Дашборд Франчайзи |
+|:---:|:---:|
+| <img src="docs/screen_login.png" width="400" alt="Login Screen"> | <img src="docs/screen_franchisee.png" width="400" alt="Franchisee Dashboard"> |
+
+| Каталог Клиента | Терминал Производства |
+|:---:|:---:|
+| <img src="docs/screen_client.png" width="400" alt="Client Catalog"> | <img src="docs/screen_production.png" width="400" alt="Production Terminal"> |
+
+---
+
 ## Репозиторий
 
 Исходный код: **https://github.com/ericoryn/avishu_superapp**

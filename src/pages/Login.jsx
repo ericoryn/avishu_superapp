@@ -64,25 +64,41 @@ export default function Login() {
     const demoAccounts = [
       { email: 'client@avishu.com', role: 'client', name: 'ДЕМО КЛИЕНТ' },
       { email: 'franchisee@avishu.com', role: 'franchisee', name: 'ДЕМО ФРАНЧАЙЗИ' },
-      { email: 'factory@avishu.com', role: 'production', name: 'ДЕМО ФАБРИКА' }
+      { email: 'factory@avishu.com', role: 'factory', name: 'ДЕМО ФАБРИКА' }
     ];
 
     try {
       for (const acc of demoAccounts) {
+        let uid = null;
         try {
           const cred = await createUserWithEmailAndPassword(auth, acc.email, '123456');
-          await setDoc(doc(db, 'users', cred.user.uid), {
+          uid = cred.user.uid;
+        } catch (e) {
+          if (e.code === 'auth/email-already-in-use') {
+            // Account exists in Auth — sign in to get uid and ensure Firestore doc exists
+            try {
+              const existingCred = await signInWithEmailAndPassword(auth, acc.email, '123456');
+              uid = existingCred.user.uid;
+            } catch (signInErr) {
+              console.warn(`Cannot sign in as ${acc.email}:`, signInErr.message);
+              continue;
+            }
+          } else {
+            throw e;
+          }
+        }
+
+        if (uid) {
+          // Always set/overwrite Firestore user document to ensure correct role
+          const userRef = doc(db, 'users', uid);
+          await setDoc(userRef, {
             name: acc.name,
             role: acc.role,
             email: acc.email
           });
-        } catch (e) {
-          if (e.code !== 'auth/email-already-in-use') {
-            throw e;
-          }
         }
       }
-      toast.success('ТЕСТОВЫЕ АККАУНТЫ СОЗДАНЫ! Пароль: 123456');
+      toast.success('ТЕСТОВЫЕ АККАУНТЫ ГОТОВЫ! Пароль: 123456');
     } catch (err) {
       console.error(err);
       toast.error('ОШИБКА СОЗДАНИЯ: ' + err.message);

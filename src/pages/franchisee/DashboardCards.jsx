@@ -2,9 +2,9 @@ import { ArrowRight, Hash, Users } from 'lucide-react';
 import { STATUS_TRANSITIONS } from '../../constants';
 
 const STAGE_COLORS = {
-  'ОФОРМЛЕН': { accent: '#6366f1', bg: 'rgba(99,102,241,0.08)' },
-  'НА ПОШИВЕ': { accent: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
-  'ГОТОВО': { accent: '#22c55e', bg: 'rgba(34,197,94,0.08)' },
+  'ОФОРМЛЕН': { accent: '#6b7280', bg: 'rgba(107,114,128,0.08)' },
+  'НА ПОШИВЕ': { accent: '#374151', bg: 'rgba(55,65,81,0.08)' },
+  'ГОТОВО': { accent: '#111827', bg: 'rgba(17,24,39,0.08)' },
 };
 
 export function FilterChip({ t, active, onClick, children, color }) {

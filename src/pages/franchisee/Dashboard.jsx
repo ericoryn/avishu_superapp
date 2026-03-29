@@ -20,9 +20,9 @@ const STAGE_ICONS = {
 };
 
 const STAGE_COLORS = {
-  'ОФОРМЛЕН': { accent: '#6366f1', bg: 'rgba(99,102,241,0.08)' },
-  'НА ПОШИВЕ': { accent: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
-  'ГОТОВО': { accent: '#22c55e', bg: 'rgba(34,197,94,0.08)' },
+  'ОФОРМЛЕН': { accent: '#6b7280', bg: 'rgba(107,114,128,0.08)' },
+  'НА ПОШИВЕ': { accent: '#374151', bg: 'rgba(55,65,81,0.08)' },
+  'ГОТОВО': { accent: '#111827', bg: 'rgba(17,24,39,0.08)' },
 };
 
 function orderCreatedAtMs(o) {
@@ -84,10 +84,10 @@ export default function FranchiseeDashboard() {
     borderAccent: isDark ? '#f0f0f0' : '#000000',
     shadow: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)',
     shadowBrutal: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.25)',
-    green: '#22c55e',
-    red: '#ef4444',
-    yellow: '#eab308',
-    indigo: '#6366f1',
+    green: isDark ? '#d1d5db' : '#374151',
+    red: isDark ? '#9ca3af' : '#6b7280',
+    yellow: isDark ? '#e5e7eb' : '#1f2937',
+    indigo: isDark ? '#f3f4f6' : '#111827',
   }), [isDark]);
 
   const now = new Date();
@@ -378,7 +378,6 @@ export default function FranchiseeDashboard() {
               label="ВЫРУЧКА СЕГОДНЯ"
               value={`${revenueToday.toLocaleString()} ₸`}
               sub={`${todayOrders.length} ЗАКАЗОВ`}
-              color={t.green}
               delay={0}
             />
             <MetricCard
@@ -388,7 +387,6 @@ export default function FranchiseeDashboard() {
               label="ЗА НЕДЕЛЮ"
               value={`${revenueWeek.toLocaleString()} ₸`}
               sub={`${weekOrders.length} ЗАКАЗОВ`}
-              color={t.indigo}
               delay={0.06}
             />
             <MetricCard
@@ -398,7 +396,6 @@ export default function FranchiseeDashboard() {
               label="ВСЕГО"
               value={`${totalRevenue.toLocaleString()} ₸`}
               sub={`СРЕДНИЙ ЧЕК: ${avgOrderValue.toLocaleString()} ₸`}
-              color={t.yellow}
               delay={0.12}
             />
             <MetricCard
@@ -408,7 +405,6 @@ export default function FranchiseeDashboard() {
               label="ВЫПОЛНЕНИЕ"
               value={`${fulfillmentRate}%`}
               sub={`${completedOrders.length} ИЗ ${orders.length}`}
-              color={Number(fulfillmentRate) >= 70 ? t.green : Number(fulfillmentRate) >= 40 ? t.yellow : t.red}
               progress={Number(fulfillmentRate)}
               delay={0.18}
             />
@@ -428,7 +424,6 @@ export default function FranchiseeDashboard() {
               label="КЛИЕНТЫ"
               value={uniqueClients.length}
               sub="УНИКАЛЬНЫХ"
-              color="#8b5cf6"
               delay={0.30}
             />
           </div>
@@ -476,7 +471,7 @@ export default function FranchiseeDashboard() {
                   style={{
                     display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px',
                     padding: '8px 12px', fontSize: '11px', fontWeight: 800,
-                    backgroundColor: t.red, color: '#fff',
+                    backgroundColor: t.bgInverse, color: t.textInverse,
                     border: 'none', cursor: 'pointer',
                   }}
                 >
@@ -499,7 +494,7 @@ export default function FranchiseeDashboard() {
                 ФИЛЬТРЫ
                 {hasActiveFilters && (
                   <span style={{
-                    backgroundColor: t.green, color: '#fff',
+                    backgroundColor: t.bgInverse, color: t.textInverse,
                     padding: '1px 6px', fontSize: '10px', fontWeight: 900,
                     marginLeft: '4px',
                   }}>{filteredOrders.length}</span>
